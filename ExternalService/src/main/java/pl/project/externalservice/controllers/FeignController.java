@@ -21,9 +21,23 @@ public class FeignController {
     @Autowired
     FeignService feignService;
 
-    @GetMapping("/all-filterBy={filter}-withValue={filterValue}-sortBy={sort}")
-    public List<FeignTask> getAll(@PathVariable("filter") String filter, @PathVariable("filterValue") String filterValue, @PathVariable("sort") String sortBy) {
+    @GetMapping("/all")
+    public List<FeignTask> getAllTasks() {
+        return feignService.all();
+    }
 
+    @GetMapping("/all-filterBy={filter}-withValue={filterValue}")
+    public List<FeignTask> getFiltered(@PathVariable("filter") String filter, @PathVariable("filterValue") String filterValue) {
+        return feignService.getFiltered(filter, filterValue);
+    }
+
+    @GetMapping("/all-sortBy={sort}")
+    public List<FeignTask> getSorted(@PathVariable("sort") String sortBy) {
+        return feignService.getSorted(sortBy);
+    }
+
+    @GetMapping("/tasks-filterBy={filter}-withValue={filterValue}-sortBy={sort}")
+    public List<FeignTask> getAll(@PathVariable("filter") String filter, @PathVariable("filterValue") String filterValue, @PathVariable("sort") String sort) {
         int filterAction = switch (filter.toUpperCase()) {
             case "ID" -> RequestAction.ID;
             case "TITLE" -> RequestAction.TITLE;
@@ -32,7 +46,7 @@ public class FeignController {
             default -> 0;
         };
 
-        int sortAction = switch (sortBy.toUpperCase()) {
+        int sortAction = switch (sort.toUpperCase()) {
             case "ID" -> RequestAction.ID;
             case "TITLE" -> RequestAction.TITLE;
             case "DESCRIPTION", "DESC" -> RequestAction.DESCRIPTION;
@@ -41,8 +55,6 @@ public class FeignController {
         };
 
         filterValue = filterValue.toUpperCase();
-
-
 
         List<FeignTask> feignTasks = new ArrayList<>();
 

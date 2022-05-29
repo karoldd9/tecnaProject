@@ -6,6 +6,8 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import pl.project.internalcloudservice.controllers.TaskController;
+import pl.project.internalcloudservice.entities.Task;
 
 @SpringBootApplication
 @ComponentScan({"pl.project.internalcloudservice.controllers", "pl.project.internalcloudservice.services"})

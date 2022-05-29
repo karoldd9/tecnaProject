@@ -13,7 +13,8 @@ import lombok.Setter;
 @Setter
 @Builder
 @Data
-public class FeignEurekaUser {
+public class FeignTask {
     private Long id;
-    private String userName, realName, lastName;
+    private String title, description;
+    private int priority;
 }

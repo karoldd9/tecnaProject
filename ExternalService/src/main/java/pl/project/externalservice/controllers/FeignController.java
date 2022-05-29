@@ -1,11 +1,14 @@
 package pl.project.externalservice.controllers;
 
+import feign.Feign;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import pl.project.externalservice.entities.FeignEurekaUser;
+import javax.validation.Valid;
+import pl.project.externalservice.entities.FeignTask;
 import pl.project.externalservice.services.FeignService;
 import pl.project.externalservice.tools.RequestAction;
 
@@ -18,39 +21,48 @@ public class FeignController {
     @Autowired
     FeignService feignService;
 
-    @GetMapping
-    public String test() {
-        return feignService.test();
-    }
+    @GetMapping("/all-filterBy={filter}-withValue={filterValue}-sortBy={sort}")
+    public List<FeignTask> getAll(@PathVariable("filter") String filter, @PathVariable("filterValue") String filterValue, @PathVariable("sort") String sortBy) {
 
-    @GetMapping("/all-filterBy={filter}-withValue={filterValue}")
-    public List<FeignEurekaUser> getAll(@PathVariable("filter") String filter, @PathVariable("filterValue") String filterValue) {
-
-        int filterInt = switch (filter.toUpperCase()) {
+        int filterAction = switch (filter.toUpperCase()) {
             case "ID" -> RequestAction.ID;
-            case "REALNAME" -> RequestAction.REAL_NAME;
-            case "USERNAME" -> RequestAction.USER_NAME;
-            case "LASTNAME" -> RequestAction.LAST_NAME;
+            case "TITLE" -> RequestAction.TITLE;
+            case "DESCRIPTION", "DESC" -> RequestAction.DESCRIPTION;
+            case "PRIORITY" -> RequestAction.PRIORITY;
             default -> 0;
         };
 
+        int sortAction = switch (sortBy.toUpperCase()) {
+            case "ID" -> RequestAction.ID;
+            case "TITLE" -> RequestAction.TITLE;
+            case "DESCRIPTION", "DESC" -> RequestAction.DESCRIPTION;
+            case "PRIORITY" -> RequestAction.PRIORITY;
+            default -> 0;
+        };
 
-        List<FeignEurekaUser> feignUsers = new ArrayList<>();
+        filterValue = filterValue.toUpperCase();
 
-        for(FeignEurekaUser feignEurekaUser: feignService.all()) {
-            if(RequestAction.filterEurekaUser(filterInt, filterValue, feignEurekaUser))
-                feignUsers.add(feignEurekaUser);
+
+
+        List<FeignTask> feignTasks = new ArrayList<>();
+
+        for(FeignTask feignTask : feignService.all()) {
+            if(RequestAction.filterFeignTasks(filterAction, filterValue, feignTask))
+                feignTasks.add(feignTask);
         }
-        return feignUsers;
+
+        RequestAction.sortFeignTasks(feignTasks, sortAction);
+
+        return feignTasks;
     }
 
-    @GetMapping("/user")
-    public FeignEurekaUser getById() {
-        return feignService.user();
+    @GetMapping("/taskById/{id}")
+    public FeignTask getTaskByID(@PathVariable("id") Long id) {
+        return feignService.getTaskById(id);
     }
 
-    @GetMapping("/userById/{id}")
-    public FeignEurekaUser userById(@PathVariable("id") Long id) {
-        return feignService.userById(id);
+    @PostMapping("/saveTask")
+    public FeignTask saveTask(@Valid @RequestBody FeignTask feignTask) {
+        return feignService.saveTask(feignTask);
     }
 }

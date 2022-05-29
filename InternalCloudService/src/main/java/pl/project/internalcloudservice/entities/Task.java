@@ -18,13 +18,13 @@ import javax.persistence.Id;
 @Setter
 @Data
 @Builder
-public class EurekaUser {
+public class Task {
 
     @Id
     @GeneratedValue
     private Long id;
 
-    private String userName;
-    private String realName;
-    private String lastName;
+    private String title;
+    private String description;
+    private int priority;
 }

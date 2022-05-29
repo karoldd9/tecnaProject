@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import pl.project.externalservice.entities.FeignEurekaUser;
 
+import java.util.List;
+
 @FeignClient(value = "internal-service")
 public interface FeignClientRepo {
 
@@ -14,8 +16,11 @@ public interface FeignClientRepo {
     String test();
 
     @GetMapping("/all")
-    ResponseEntity<?> getAll();
+    List<FeignEurekaUser> getAll();
 
     @GetMapping("/simple")
     FeignEurekaUser getById();
+
+    @GetMapping("/userById/{id}")
+    FeignEurekaUser getUserById(@PathVariable("id") Long id);
 }

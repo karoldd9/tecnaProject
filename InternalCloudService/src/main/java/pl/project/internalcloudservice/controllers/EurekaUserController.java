@@ -1,5 +1,6 @@
 package pl.project.internalcloudservice.controllers;
 
+import org.apache.http.client.methods.HttpHead;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -7,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,21 +37,32 @@ public class EurekaUserController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(eurekaUserService.getAllEurekaUsers().iterator().next());
     }
 
+    @GetMapping("/userById/{id}")
+    public ResponseEntity<EurekaUser> getUserById(@PathVariable("id") Long id) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(eurekaUserService.getEurekaUserById(id));
+    }
+
     @GetMapping("/byId")
     public EurekaUser getEurekaUserById(Long id) {
         return eurekaUserService.getEurekaUserById(id);
     }
 
     @GetMapping("/all")
-    public List<EurekaUser> getAllEurekaUsers() {
+    public ResponseEntity<List<EurekaUser>> getAllEurekaUsers() {
         Iterator<EurekaUser> eurekaUserIterator = eurekaUserService.getAllEurekaUsers().iterator();
         List<EurekaUser> eurekaUsers = new ArrayList<>();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 
         while(eurekaUserIterator.hasNext()) {
             eurekaUsers.add(eurekaUserIterator.next());
         }
 
-        return eurekaUsers;
+        return ResponseEntity.status(HttpStatus.ACCEPTED).headers(headers).body(eurekaUsers);
     }
 
     @GetMapping

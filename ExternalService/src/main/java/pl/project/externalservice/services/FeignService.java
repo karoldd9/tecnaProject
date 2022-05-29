@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import pl.project.externalservice.entities.FeignEurekaUser;
 import pl.project.externalservice.feignClients.FeignClientRepo;
 
+import java.util.List;
+
 @Service
 public class FeignService {
 
@@ -16,11 +18,15 @@ public class FeignService {
         return feignClientRepo.test();
     }
 
-    public ResponseEntity<?> all() {
+    public List<FeignEurekaUser> all() {
         return feignClientRepo.getAll();
     }
 
     public FeignEurekaUser user() {
         return feignClientRepo.getById();
+    }
+
+    public FeignEurekaUser userById(Long id) {
+        return feignClientRepo.getUserById(id);
     }
 }
